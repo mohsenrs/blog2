@@ -1,18 +1,37 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>Home</h1>
+    <div v-if="error">{{ error }}</div>
+    <div v-if="posts.length">
+      <PostList v-if="showPosts" :posts="posts" />
+    </div>
+    <div v-else>
+      <small>Loading data...</small>
+    </div>
+    <br />
+    <button @click="toggleShow">toggle</button>
+    <button @click="posts.shift()">delete a post</button>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import { ref } from "vue";
+import PostList from "../components/PostList";
+import getPosts from "../composables/getPosts";
 
 export default {
-  name: 'Home',
-  components: {
-    HelloWorld
-  }
-}
+  name: "Home",
+  components: { PostList },
+  setup() {
+    const { posts, error, load } = getPosts();
+    load();
+
+    const showPosts = ref(true);
+    const toggleShow = () => {
+      showPosts.value = !showPosts.value;
+    };
+
+    return { posts, showPosts, toggleShow, error };
+  },
+};
 </script>
